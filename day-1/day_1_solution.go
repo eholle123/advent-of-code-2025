@@ -66,26 +66,18 @@ func CalcLockComboAnyClicks(rotations []int) int {
 	remainder  int
     )
     sum	= 50
-    // fmt.Println("Input:\tTotal zeros:\tRaw clicks:\tClicks:\tPosition:")
-    // fmt.Println("num:\tsum:\tzeros:\tfcs:\trd:\tclicks:\tposition:")
-    fmt.Println("num:\tsum:\tremainder:\tzeros:\tclicks:\tposition:")
+    // fmt.Println("num:\tsum:\tremainder:\tzeros:\tclicks:\tposition:")
+    fmt.Println("num:\teuclidq:\tremainder:\tsum:\tzeros:\tclicks:\tposition:")
     for _,num:=range rotations {
-	// sum    	= sum + num
-        // fcs,rd  :=math.Modf(float64(sum / 100))
-	// clicks 	= int(math.Abs(fcs))
-	// sum    	= sum % 100
-	// pos 	= (sum + 100) % 100
-	// zeros += clicks
-	// fmt.Println(num,"\t",sum,"\t",zeros,"\t",fcs,"\t",rd,"\t",clicks,"\t",pos)
 	equo 	  = int(math.Floor(float64((sum+num)/100)))
 	remainder = (sum + int(math.Abs(float64(num)))) % 100
-	// clicks	  = (sum - int(math.Abs(float64(remainder)))) / 99
 	sum	  = (sum + num) % 100
 	pos 	  = (sum + 100) % 100
 	clicks 	  = (pos + remainder) / 100
-	if remainder==0 && equo==0 { zeros += 1 }
+	// if equo!=0 { zeros += int(math.Abs(float64(equo))) }
+	if int(math.Abs(float64(equo)))!=0 { zeros += int(math.Abs(float64(equo))) }
 	zeros 	  += clicks
-	fmt.Println(num,"\t",sum,"\t",remainder,"\t\t",zeros,"\t",clicks,"\t",pos)
+	fmt.Println(num,"\t",equo,"\t\t",remainder,"\t\t",sum,"\t",zeros,"\t",clicks,"\t",pos)
     }
     return zeros
 }
