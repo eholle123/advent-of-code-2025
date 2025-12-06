@@ -1,21 +1,24 @@
 package main
 
-import ("os"; "fmt"; "bufio"; "io"; "strconv")
+import ("os"; "fmt"; "bufio"; "io"; "strconv")  // ; "slices"; "strings")
 
 func main() {
-    lines,er:=ParseInput(os.Stdin); if er!=nil { panic(er) }
-    // fmt.Println(lines)
+    // lines,er:=ParseInput(os.Stdin); if er!=nil { panic(er) }
+    // // fmt.Println(lines)
 
-    sum:=0
-    for i:=range len(lines) {
-	if lines[i]!="" {
-	    sum += GetBatteriesOn(lines[i])
-	}
-    }
-    fmt.Println("Day 3 Part 1:",sum)
+    // sum:=0
+    // for i:=range len(lines) {
+    //     if lines[i]!="" {
+    //         sum += GetBatteriesOn(lines[i])
+    //     }
+    // }
+    // fmt.Println("Day 3 Part 1:",sum)
 
-    sum_12:=TurnOnBig12(lines)
-    fmt.Println("Day 3 Part 2:",sum_12)
+    banks:=ParseInputCorrect(os.Stdin)
+    fmt.Println(banks)
+
+    // sum_12:=TurnOnBig12(lines)
+    // fmt.Println("Day 3 Part 2:",sum_12)
 }
 
 func ParseInput(in io.Reader) ([]string,error) {
@@ -78,16 +81,19 @@ func TurnOnBig12(lines []string) int {
 		    battery = battery_i
 		}
 		for j:=range 12 {
+		    battery_j_str:=string(line[i+j+1:12+j-i])
+		    sub_i:=string(battery_i_str[j:])
+		    fmt.Println(battery_i_str,battery_j_str,sub_i)
 		    // fmt.Println(i+j, max_i)
-		    if i+j<=12 {
-    		        battery_j_str:=string(line[i+j:i+12])
-		        curr_num_str:=string(battery_i_str[i:i+j])+battery_j_str
-		        curr_num,er:=strconv.Atoi(curr_num_str); if er!=nil { panic(er) }
-		        // fmt.Println(curr_num, len(curr_num_str))
-		        if battery<curr_num {
-		            battery = curr_num 
-	    	        }
-		    }
+		    // if i+j<=12 {
+    		    //     battery_j_str:=string(line[j:i+12])
+		    //     curr_num_str:=string(battery_i_str[i:i+j])+battery_j_str
+		    //     curr_num,er:=strconv.Atoi(curr_num_str); if er!=nil { panic(er) }
+		    //     // fmt.Println(curr_num, len(curr_num_str))
+		    //     if battery<curr_num {
+		    //         battery = curr_num 
+	    	    //     }
+		    // }
 		}
 	    }
 	}
@@ -96,3 +102,33 @@ func TurnOnBig12(lines []string) int {
     }
     return energy_sum
 }
+
+
+
+type Battery struct {
+    value 	int
+    index	int
+}
+type Bank struct {
+    batteries	[]Battery
+}
+func ParseInputCorrect(in io.Reader) []Bank {
+    scanner:=bufio.NewScanner(in)
+    var banks []Bank
+    for scanner.Scan() {
+	bank_data := scanner.Text()
+	var batteries []Battery
+	for i,s:=range bank_data {
+	    value,er:=strconv.Atoi(string(s)); if er!=nil { panic(er) }
+	    battery  := Battery{value, i}
+	    batteries = append(batteries, battery)
+	}
+	banks = append(banks, Bank{ batteries })
+    }
+    er:=scanner.Err()
+    if er!=nil { panic(er) }
+    return banks
+}
+// func GetBankJoltage(bank Bank, num_batteries_on int) int {
+//     return 0
+// }
