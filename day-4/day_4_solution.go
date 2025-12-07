@@ -4,11 +4,23 @@ import ("os"; "io"; "fmt"; "bufio"; "strings")
 
 func main() {
     grid:=ParseGridMatrix(os.Stdin)
-    // fmt.Println(grid)
     PrintGridMatrix(grid.m)
     
-    total:=CountAccessableRolls(grid.m,4)
-    fmt.Println("\nDay 4 Part 1 answer:",total)
+    // total:=CountAccessableRolls(grid.m,4)
+    // fmt.Println("\nDay 4 Part 1 answer:",total)
+    // PrintGridMatrix(grid.m)
+
+    // grid.m = ResetGrid(grid.m)
+    // PrintGridMatrix(grid.m)
+
+    // t2:=CountAccessableRolls(grid.m,4)
+    // fmt.Println("\nt2:",t2)
+    // PrintGridMatrix(grid.m)
+
+    // grid.m = ResetGrid(grid.m)
+    // PrintGridMatrix(grid.m)
+    total:=CountRemovableRolls(grid.m,4)
+    fmt.Println("Day 4 Part 2 answer:",total)
 }
 type Roll struct {
     value	string
@@ -36,27 +48,28 @@ func ParseGridMatrix(in io.Reader) GridMatrix {
     }
     return GridMatrix{grid,max_rows,max_cols}
 }
-func PrintGridMatrix(grid [][]Roll) {
-    var i int
-    for x:=range len(grid) {
-	for y:=range len(grid[x]) {
-	    if i==len(grid) {
-		i = 1
-		fmt.Println()
-	    } else {
-		i++
-	    }
-	    fmt.Print(grid[x][y].value)
-	}
+func CountRemovableRolls(grid [][]Roll, max_around int) int {
+    var total int
+    remaining_accessable:=1
+    for remaining_accessable!=0 {
+	remaining_accessable = CountAccessableRolls(grid,max_around)
+	total = total + remaining_accessable
+	PrintGridMatrix(grid)
+	grid = ResetGrid(grid)
+	PrintGridMatrix(grid)
     }
+    return total
 }
 func CountAccessableRolls(grid [][]Roll, max_around int) int {
     var access_total	int
     for i:=range len(grid) {
 	for j:=range len(grid[i]) {
 	    if grid[i][j].value=="@" {
-		if CanAccessRoll(i,j,grid,max_around) {
+		can_access:=CanAccessRoll(i,j,grid,max_around) 
+		if can_access {
 		    access_total++
+		    grid[i][j].value = "x"
+		    grid[i][j].can_access = can_access
 		}
 	    }
 	}
@@ -110,8 +123,36 @@ func CanAccessRoll(i int, j int, grid [][]Roll, max_around int) bool {
         d  = grid[i+1][j  ].value
         dr = grid[i+1][j+1].value 
     }
-    if strings.Count(ul+u+ur+l+r+dl+d+dr,"@") < max_around {
+    a_count:=strings.Count(ul+u+ur+l+r+dl+d+dr,"@") 
+    x_count:=strings.Count(ul+u+ur+l+r+dl+d+dr,"x") 
+    if a_count+x_count < max_around {
         return true
     }
     return false
+}
+func ResetGrid(grid [][]Roll) [][]Roll {
+    for i:=range len(grid) {
+	for j:=range len(grid[i]) {
+	    if grid[i][j].value=="x" {
+		grid[i][j].value = "."
+	    }
+	}
+    }
+    return grid
+}
+func PrintGridMatrix(grid [][]Roll) {
+    fmt.Println()
+    var i int
+    for x:=range len(grid) {
+	for y:=range len(grid[x]) {
+	    if i==len(grid) {
+		i = 1
+		fmt.Println()
+	    } else {
+		i++
+	    }
+	    fmt.Print(grid[x][y].value)
+	}
+    }
+    fmt.Println()
 }
