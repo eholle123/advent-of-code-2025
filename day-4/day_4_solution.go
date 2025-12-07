@@ -10,44 +10,6 @@ func main() {
     total:=CountAccessableRolls(grid.m,4)
     fmt.Println("\nDay 4 Part 1 answer:",total)
 }
-type Grid struct {
-    locs	[]Location
-    max_rows	int
-    max_cols	int
-}
-type Location struct {
-    c		string
-    x		int
-    y		int
-    roll	bool
-    can_access	bool
-}
-func ParseGrid(in io.Reader) Grid {
-    scanner:=bufio.NewScanner(in)
-    var locs 			[]Location
-    var x, max_rows, max_cols 	int
-    for scanner.Scan() {
-	loc_data:=scanner.Text()
-	max_cols = len(loc_data)
-	var loc Location
-	for y,s:=range loc_data {
-	    c:=string(s)
-	    loc = Location{
-		c,
-		x,
-		y,
-		false,
-		false,  // can_access not calculated until whole Grid made
-	    }
-	    if c=="@" { loc.roll = true }
-	    locs = append(locs, loc)
-	}
-	x++
-    }
-    max_rows = x
-    er:=scanner.Err(); if er!=nil { panic(er) }
-    return Grid{ locs, max_rows, max_cols }
-}
 type Roll struct {
     value	string
     can_access  bool
@@ -148,21 +110,8 @@ func CanAccessRoll(i int, j int, grid [][]Roll, max_around int) bool {
         d  = grid[i+1][j  ].value
         dr = grid[i+1][j+1].value 
     }
-
     if strings.Count(ul+u+ur+l+r+dl+d+dr,"@") < max_around {
         return true
     }
     return false
-}
-func PrintGrid(grid Grid) {
-    var i int
-    for _,loc:=range grid.locs {
-	if i==grid.max_cols {
-	   i = 1
-	   fmt.Println()
-	} else {
-	   i++
-	}
-        fmt.Print(loc.c," ")
-    }
 }
