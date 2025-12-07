@@ -1,6 +1,6 @@
 package main
 
-import ("os"; "fmt"; "bufio"; "io"; "strconv")  // ; "slices"; "strings")
+import ("os"; "fmt"; "bufio"; "io"; "strconv"; "cmp"; "slices")  // ; "strings")
 
 func main() {
     // lines,er:=ParseInput(os.Stdin); if er!=nil { panic(er) }
@@ -16,6 +16,14 @@ func main() {
 
     banks:=ParseInputCorrect(os.Stdin)
     fmt.Println(banks)
+    fmt.Println("\n",banks[0])
+
+    fmt.Println("\nbank_1",banks[0])
+    joltage_bank_1:=GetBankJoltage(banks[0],12)
+    fmt.Println(joltage_bank_1)
+    fmt.Println("\nbank_2",banks[1])
+    joltage_bank_2:=GetBankJoltage(banks[1],12)
+    fmt.Println(joltage_bank_2)
 
     // sum_12:=TurnOnBig12(lines)
     // fmt.Println("Day 3 Part 2:",sum_12)
@@ -129,6 +137,32 @@ func ParseInputCorrect(in io.Reader) []Bank {
     if er!=nil { panic(er) }
     return banks
 }
-// func GetBankJoltage(bank Bank, num_batteries_on int) int {
-//     return 0
-// }
+func GetBankJoltage(bank Bank, num_batteries_on int) int {
+    joltage:=0
+    sortFunc := func(a, b Battery) int {
+        return cmp.Compare(b.value, a.value)
+    }
+    sorted_batteries:=slices.SortedStableFunc(slices.Values(bank.batteries), sortFunc)
+    fmt.Println("sorted_batteries",sorted_batteries)
+    curr_big:=sorted_batteries[0]
+    joltage = joltage*10 + curr_big.value
+    for i:=range num_batteries_on-1 {
+        sorted_batteries:=slices.SortedStableFunc(slices.Values(bank.batteries[i+1:]), sortFunc)
+        fmt.Println("sorted_batteries",sorted_batteries)
+	j:=0
+        curr_big:=sorted_batteries[j]
+	for curr_big.index+num_batteries_on-1>len(bank.batteries) {
+	   curr_big = sorted_batteries[j]
+	   j++
+	}
+        joltage = joltage*10 + curr_big.value
+    }
+    // max_i:=len(s)-1
+    // for i:=range max_i:
+    //     sorted_batteries:=slices.SortStableFunc(bank.batteries, func(a, b Battery) int {
+    //         return cmp.Compare(a.value, b.value)
+    //     })
+    //     energy = energy*10 + sorted_batteries[0].value
+    // return 0
+    return joltage
+}
