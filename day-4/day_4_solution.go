@@ -3,60 +3,44 @@ package main
 import ("os"; "io"; "fmt"; "bufio"; "strings")
 
 func main() {
-    grid:=ParseGridMatrix(os.Stdin)
-    PrintGridMatrix(grid.m)
+    grid:=ParseGrid(os.Stdin)
+    // PrintGrid(grid)
     
-    // total:=CountAccessableRolls(grid.m,4)
-    // fmt.Println("\nDay 4 Part 1 answer:",total)
-    // PrintGridMatrix(grid.m)
-
-    // grid.m = ResetGrid(grid.m)
-    // PrintGridMatrix(grid.m)
-
-    // t2:=CountAccessableRolls(grid.m,4)
-    // fmt.Println("\nt2:",t2)
-    // PrintGridMatrix(grid.m)
-
-    // grid.m = ResetGrid(grid.m)
-    // PrintGridMatrix(grid.m)
-    total:=CountRemovableRolls(grid.m,4)
-    fmt.Println("Day 4 Part 2 answer:",total)
+    // Day 4 Part 1 Solution calculated in CountRemovableRolls
+    t2:=CountRemovableRolls(grid,4)
+    fmt.Println("Day 4 Part 2 answer:",t2)
 }
 type Roll struct {
     value	string
     can_access  bool
 }
-type GridMatrix struct {
-    m		[][]Roll
-    max_rows	int
-    max_cols	int
-}
-func ParseGridMatrix(in io.Reader) GridMatrix {
+func ParseGrid(in io.Reader) [][]Roll {
     scanner:=bufio.NewScanner(in)
     var grid [][]Roll
-    var max_rows, max_cols int
     for scanner.Scan() {
 	row_data:=scanner.Text()
-	max_cols = len(row_data)
 	var row_rolls []Roll
 	for _,s:=range row_data {
 	    value:=string(s)
 	    row_rolls = append(row_rolls, Roll{value,false})
 	}
 	grid = append(grid, row_rolls)
-	max_rows++
     }
-    return GridMatrix{grid,max_rows,max_cols}
+    return grid
 }
 func CountRemovableRolls(grid [][]Roll, max_around int) int {
-    var total int
+    var total, round int
     remaining_accessable:=1
     for remaining_accessable!=0 {
 	remaining_accessable = CountAccessableRolls(grid,max_around)
+	round++
+	if round==1 {
+    	    fmt.Println("\nDay 4 Part 1 answer:",remaining_accessable)
+	}
 	total = total + remaining_accessable
-	PrintGridMatrix(grid)
+	// PrintGrid(grid)
 	grid = ResetGrid(grid)
-	PrintGridMatrix(grid)
+	// PrintGrid(grid)
     }
     return total
 }
@@ -140,7 +124,7 @@ func ResetGrid(grid [][]Roll) [][]Roll {
     }
     return grid
 }
-func PrintGridMatrix(grid [][]Roll) {
+func PrintGrid(grid [][]Roll) {
     fmt.Println()
     var i int
     for x:=range len(grid) {
