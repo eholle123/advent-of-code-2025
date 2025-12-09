@@ -33,12 +33,16 @@ func ParseIdRanges(in io.Reader) []IDRange {
 }	
 func GetInvalidIds(id_ranges []IDRange) []string {
 	var invalid_ids []string
+	var c1					string
 	for _,id_range:=range id_ranges {
 		start,er:=strconv.Atoi(id_range.start); if er!=nil { panic(er) }
 		stop ,er:=strconv.Atoi(id_range.stop ); if er!=nil { panic(er) }
 		r:=stop-start+1
 		for i:=range r {
 			id:=strconv.Itoa(start+i)
+			for range len(id)+1 {
+				c1 += string(id[0])
+			}
 			if len(id)%2==0 {
 				p1:=id[:len(id)/2]
 				p2:=id[len(id)/2:]
@@ -50,6 +54,21 @@ func GetInvalidIds(id_ranges []IDRange) []string {
 		}
 	}
 	return invalid_ids
+}
+func CheckSymmetry(s string, n int) bool {
+	id,er:=strconv.Atoi(s); if er!=nil { panic(er) }
+	for i:=range len(s)+1 {
+		if len(s)%i==0 && i!=0 && i!=1 && len(s)/i!=1 && n==i {
+			var prefix string
+			prefix:=string(s[:len(s)/2])
+			current:=string(s[:len(s)/2])
+			found:=true
+			for found==true {
+				after,found:=strings.CutPrefix(s,prefix)
+
+			}
+		} 
+	}
 }
 func SumInvalidIds(ids []string) int {
 	var sum int
